@@ -175,7 +175,7 @@ export const review = {
   estQty: "Estimated quantity",
   invested: "Amount invested",
   fee: "Delta fee",
-  feeInfo: "1% of the order, minimum $0.25. It's included in the total.",
+  feeInfo: "This is what Delta earns on the trade: 1% of the order, minimum $0.25. It's already in the total. No other fees are added.",
   total: "Total",
   estimate: "The final quantity may differ slightly if the price moves before the order completes.",
   confirm: (side: "buy" | "sell") => `Confirm ${side === "buy" ? "Buy" : "Sell"}`,

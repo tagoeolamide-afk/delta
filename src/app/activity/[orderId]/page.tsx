@@ -37,7 +37,7 @@ export default function TransactionPage() {
           <div className="kv"><dt>Price</dt><dd className="num">{fmtPrice(o.price).text}</dd></div>
           <div className="kv"><dt>Delta fee</dt><dd className="num">{money(o.fee)}</dd></div>
           <div className="kv"><dt>{t.date}</dt><dd>{dateTime(o.createdAt)}</dd></div>
-          <div className="kv"><dt>{t.id}</dt><dd style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}>{o.id}</dd></div>
+          <div className="kv"><dt>{t.id}</dt><dd style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 500 }}>{o.id}</dd></div>
         </dl>
       </div>
     </main>

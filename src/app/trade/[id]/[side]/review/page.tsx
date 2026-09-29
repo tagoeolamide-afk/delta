@@ -93,7 +93,9 @@ function Review({ asset: a, side }: { asset: Asset; side: TradeSide }) {
           </div>
         </div>
 
-        <h1 className="display-2 num" style={{ marginTop: 20, fontSize: "2.25rem" }}>{sentence}</h1>
+        <h1 className="sentence num" style={{ marginTop: 20 }} aria-label={sentence}>
+          {side === "buy" ? <>Buy <b>{money(calc.usd)}</b> of <b>{a.symbol}</b></> : <>Sell <b>{qty(calc.quantity)}</b> <b>{a.symbol}</b> for about <b>{money(calc.usd)}</b></>}
+        </h1>
 
         {/* Price movement — never silent when material */}
         <div style={{ marginTop: 16 }} aria-live="polite">
@@ -108,28 +110,28 @@ function Review({ asset: a, side }: { asset: Asset; side: TradeSide }) {
         </div>
 
         {/* Primary summary */}
-        <div className="card" style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="stats" style={{ marginTop: 16 }}>
           <div>
             <p className="label">{side === "buy" ? r.youPay : "You sell"}</p>
-            <p className="h-section num" style={{ marginTop: 4, fontSize: "1.35rem" }}>{side === "buy" ? money(calc.usd) : qty(calc.quantity, a.symbol)}</p>
+            <p className="h-section num wrap-anywhere" style={{ marginTop: 4, fontSize: "1.125rem" }}>{side === "buy" ? money(calc.usd) : qty(calc.quantity, a.symbol)}</p>
           </div>
           <div>
             <p className="label">{r.youReceive}</p>
-            <p className="h-section num" style={{ marginTop: 4, fontSize: "1.35rem" }}>≈ {side === "buy" ? qty(calc.quantity, a.symbol) : money(calc.usd)}</p>
+            <p className="h-section num wrap-anywhere" style={{ marginTop: 4, fontSize: "1.125rem" }}>≈ {side === "buy" ? qty(calc.quantity, a.symbol) : money(calc.usd)}</p>
           </div>
         </div>
 
         {/* Details */}
         <dl style={{ marginTop: 12 }}>
           <div className="kv"><dt>{r.price}</dt><dd className="num" title={fmtPrice(live).full}>{fmtPrice(live).text}</dd></div>
-          <div className="kv"><dt>{r.estQty}</dt><dd className="num">{qty(calc.quantity, a.symbol)}</dd></div>
+          <div className="kv"><dt>{r.estQty}</dt><dd className="num">{qty(calc.quantity, a.symbol)}<span className="cap">Approximate amount</span></dd></div>
           <div className="kv"><dt>{side === "buy" ? r.invested : "Sale value"}</dt><dd className="num">{money(calc.invested)}</dd></div>
           <div className="kv">
             <dt>{r.fee}<button className="icon-btn" style={{ width: 28, height: 28 }} aria-label="About the Delta fee" onClick={() => setFeeInfo(true)}><Icon name="info" size={16} /></button></dt>
             <dd className="num">{side === "buy" ? "" : "−"}{money(calc.fee)}</dd>
           </div>
-          <div className="kv" style={{ borderTop: "1px solid var(--line-strong)" }}>
-            <dt style={{ color: "var(--ink)", fontWeight: 600 }}>{side === "buy" ? r.total : "You receive"}</dt>
+          <div className="kv" style={{ borderTop: "1px solid var(--line-2)" }}>
+            <dt style={{ color: "var(--text)", fontWeight: 600 }}>{side === "buy" ? r.total : "You receive"}</dt>
             <dd className="num" style={{ fontSize: "1.1rem" }}>{money(calc.usd)}</dd>
           </div>
         </dl>

@@ -47,11 +47,11 @@ export default function DiscoverPage() {
       </header>
       <div className="screen">
         <Link href="/search" className="hstack" onClick={() => track("search_started", { source: "discover" })}
-          style={{ minHeight: 50, padding: "0 16px", borderRadius: 999, background: "var(--surface)", color: "var(--ink-2)" }}>
+          style={{ minHeight: 48, padding: "0 14px", borderRadius: 12, background: "var(--s1)", color: "var(--text-2)" }}>
           <Icon name="search" size={20} /><span>{common.searchPlaceholder}</span>
         </Link>
 
-        <div className="seg" role="group" aria-label="Asset type" style={{ marginTop: 16 }}>
+        <div className="text-tabs" role="group" aria-label="Asset type" style={{ marginTop: 12 }}>
           <button aria-pressed={type === "all"} onClick={() => setType("all")}>{discover.all}</button>
           <button aria-pressed={type === "meme"} onClick={() => setType("meme")}>{TYPE_PLURAL.meme}</button>
           <button aria-pressed={type === "stock"} onClick={() => setType("stock")}>{TYPE_PLURAL.stock}</button>

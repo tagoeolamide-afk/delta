@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { useStore } from "@/lib/store";
 import { RANGE_LABEL, series } from "@/lib/data";
 import type { Range, RiskFlag } from "@/lib/types";
-import { compact, compactNum, money, qty, spokenChange } from "@/lib/format";
+import { compact, compactNum, qty, spokenChange } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { asset as t, common, RISK_DETAIL, RISK_LABEL, trade as tc } from "@/content/copy";
 import { Icon } from "@/components/Icon";
 import { AssetLogo, TypeLabel } from "@/components/identity";
-import { FullChart, PriceChange, PriceText, RangeSelector, UpdatedAt } from "@/components/market";
+import { FullChart, Money, PriceChange, RangeSelector, UpdatedAt } from "@/components/market";
 import { Banner, EmptyState, Sheet } from "@/components/feedback";
 import { TopBar } from "@/components/chrome";
 
@@ -75,37 +75,45 @@ export default function AssetPage() {
 
       <div className="screen no-tabs">
         {/* Identity — G1: name, symbol, type, price, movement, owned?, tradable? within first viewport */}
-        <div className="hstack" style={{ gap: 12, alignItems: "flex-start" }}>
-          <AssetLogo asset={a} size={48} />
+        <div className="hstack" style={{ gap: 10, alignItems: "flex-start" }}>
+          <AssetLogo asset={a} size={36} />
           <div style={{ minWidth: 0 }}>
-            <h1 className="title wrap-anywhere" style={{ fontSize: "1.25rem" }}>{a.name}</h1>
-            <p className="hstack" style={{ gap: 10, flexWrap: "wrap", marginTop: 2 }}>
-              <span className="num" style={{ fontWeight: 600 }}>{a.symbol}</span>
+            <h1 className="h-section wrap-anywhere" style={{ fontSize: "1.125rem" }}>{a.name}</h1>
+            <p className="hstack" style={{ gap: 6, flexWrap: "wrap", marginTop: 2 }}>
+              <span className="num small" style={{ fontWeight: 600, color: "var(--text-2)" }}>{a.symbol}</span>
               <TypeLabel type={a.type} />
             </p>
             {a.identityNote && <p className="small muted" style={{ marginTop: 4 }}>{a.identityNote}</p>}
           </div>
         </div>
 
-        <div style={{ marginTop: 20 }} aria-live="off">
+        {/* Price row: big figure left, change pill right (Crypto.com) */}
+        <div style={{ marginTop: 18 }} aria-live="off">
           {hasPrice ? (
             <>
-              <p className="display-2"><PriceText value={shown} /></p>
-              <p style={{ marginTop: 6 }}>
-                <PriceChange pctValue={rangePct} period={scrub !== null ? "since start of period" : RANGE_LABEL[range]} />
+              <div className="between" style={{ alignItems: "flex-end", flexWrap: "wrap", rowGap: 8 }}>
+                <p className="display-2"><Money value={shown} kind="price" unit="USD" /></p>
+                <PriceChange pctValue={rangePct} pill />
+              </div>
+              <p className="small muted" style={{ marginTop: 6 }}>
+                {h ? <>{t.youOwn} <strong style={{ color: "var(--text)" }}>{qty(h.quantity, a.symbol)}</strong></> : t.notOwned}
+                <span aria-hidden> · </span>
+                {scrub !== null ? "since start of period" : RANGE_LABEL[range]}
               </p>
-              <p style={{ marginTop: 6 }}><UpdatedAt ts={q.updatedAt} now={s.now} stale={stale} /></p>
             </>
           ) : (
             <Banner tone="warn">{t.priceUnavailable}</Banner>
           )}
-          <p className="small" style={{ marginTop: 10, display: "flex", gap: 6, alignItems: "center" }}>
-            {h ? <><Icon name="check" size={16} /> {t.youOwn} {qty(h.quantity, a.symbol)}</> : <span className="muted">{t.notOwned}</span>}
-          </p>
         </div>
 
-        {/* Chart */}
+        {/* Chart: LIVE + range pills above (Crypto.com) */}
         <section style={{ marginTop: 16, minHeight: 180 + 48 }} aria-label="Price chart">
+          <div className="hstack" style={{ gap: 12, marginBottom: 12 }}>
+            {hasPrice && <UpdatedAt ts={q.updatedAt} now={s.now} stale={stale} />}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <RangeSelector value={range} onChange={(r) => { setRange(r); track("chart_range_changed", { asset_id: a.id, range: r }); }} />
+            </div>
+          </div>
           {!hasPrice || s.lab.chartFail ? (
             <div className="tile" style={{ height: 180, display: "grid", placeItems: "center", textAlign: "center" }}>
               <span className="muted hstack"><Icon name="alert" size={18} />{t.chartUnavailable}</span>
@@ -121,20 +129,22 @@ export default function AssetPage() {
               summary={t.chartSummary(a.symbol, spokenChange(((values[values.length - 1] - first) / first) * 100), range === "1D" ? "past day" : RANGE_LABEL[range])}
             />
           )}
-          <div style={{ marginTop: 12 }}>
-            <RangeSelector value={range} onChange={(r) => { setRange(r); track("chart_range_changed", { asset_id: a.id, range: r }); }} />
-          </div>
         </section>
 
-        {/* Position */}
+        {/* YOUR BALANCE data block (Crypto.com) */}
         {h && hasPrice && (
-          <section className="section card">
-            <h2 className="label">Your position</h2>
-            <dl style={{ marginTop: 6 }}>
-              <div className="kv"><dt>{t.ownedValue}</dt><dd className="num">{money(h.quantity * q.price)}</dd></div>
-              <div className="kv"><dt>Quantity</dt><dd className="num">{qty(h.quantity, a.symbol)}</dd></div>
-              <div className="kv"><dt>{t.totalReturn}</dt><dd><PriceChange pctValue={((h.quantity * q.price - h.costBasis) / h.costBasis) * 100} abs={h.quantity * q.price - h.costBasis} /></dd></div>
-            </dl>
+          <section className="section">
+            <h2 className="label">Your balance</h2>
+            <div className="between" style={{ marginTop: 6, alignItems: "flex-end" }}>
+              <div>
+                <p className="title"><Money value={h.quantity * q.price} /></p>
+                <p className="small muted num" style={{ marginTop: 2 }}>{qty(h.quantity, a.symbol)}</p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <p className="label" style={{ marginBottom: 4 }}>{t.totalReturn}</p>
+                <PriceChange pctValue={((h.quantity * q.price - h.costBasis) / h.costBasis) * 100} abs={h.quantity * q.price - h.costBasis} className="small" />
+              </div>
+            </div>
           </section>
         )}
 
@@ -152,38 +162,49 @@ export default function AssetPage() {
             )}
           </section>
         ) : (
-          <section className="section" style={{ padding: 18, borderRadius: "var(--r-card)", background: "var(--reg-tint)" }}>
-            <div className="between">
-              <h2 className="label" style={{ color: "var(--ink)" }}>{t.whatYouOwn}</h2>
-              <span className="small hstack" style={{ gap: 6, color: "var(--ink-2)" }}><Icon name="clock" size={14} />{a.session === "open" ? t.session.open : a.session === "extended" ? "Extended hours" : "Market closed"}</span>
-            </div>
-            <p style={{ marginTop: 10 }}>{a.ownership!.summary}</p>
+          <section className="section card" aria-labelledby="own">
+            <h2 id="own" className="label">{t.whatYouOwn}</h2>
+            <p style={{ marginTop: 8 }}>{a.ownership!.summary}</p>
             <p className="small muted" style={{ marginTop: 6 }}>{t.underlying}: {a.underlying}</p>
-            <button className="btn-link" style={{ marginTop: 6, paddingLeft: 0 }} onClick={() => openSheet("own")}>{t.rights}</button>
           </section>
         )}
 
-        <section className="section">
-          <h2 className="h-section">{t.stats}</h2>
-          <dl style={{ marginTop: 4 }}>
-            {a.marketCap && <div className="kv"><dt>{t.marketValue}</dt><dd className="num">{compact(a.marketCap)}</dd></div>}
-            {a.volume24h && <div className="kv"><dt>{t.volume}</dt><dd className="num">{a.type === "stock" ? `${compactNum(a.volume24h)} shares` : compact(a.volume24h)}</dd></div>}
-            {a.supply && <div className="kv"><dt>{t.supply}</dt><dd className="num">{compactNum(a.supply)} {a.symbol}</dd></div>}
-            <div className="kv"><dt>{t.listed}</dt><dd>{a.listedDaysAgo <= 30 ? `${a.listedDaysAgo} days ago` : new Date(s.now - a.listedDaysAgo * 864e5).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</dd></div>
+        {/* Key stats as a divided strip (Crypto.com) */}
+        <section className="section" aria-labelledby="ks">
+          <h2 id="ks" className="h-section" style={{ marginBottom: 10 }}>{t.stats}</h2>
+          <dl className="stats wrap">
+            {a.marketCap !== undefined && <div><dt>{t.marketValue}</dt><dd className="num">{compact(a.marketCap)}</dd></div>}
+            {a.volume24h !== undefined && <div><dt>{t.volume}</dt><dd className="num">{a.type === "stock" ? `${compactNum(a.volume24h)} sh` : compact(a.volume24h)}</dd></div>}
+            {a.supply !== undefined && <div><dt>{t.supply}</dt><dd className="num">{compactNum(a.supply)}</dd></div>}
+            <div><dt>{t.listed}</dt><dd>{a.listedDaysAgo <= 30 ? `${a.listedDaysAgo} days ago` : new Date(s.now - a.listedDaysAgo * 864e5).toLocaleDateString("en-US", { month: "short", year: "numeric" })}</dd></div>
           </dl>
         </section>
 
-        {/* Layer 3 — progressive disclosure */}
-        <section className="section">
-          <ul>
-            {([["about", t.about], ["risks", t.risks]] as [Exclude<SheetKind, null | "intro">, string][]).map(([k, label]) => (
-              <li key={k}>
-                <button className="row row-link" style={{ gridTemplateColumns: "1fr auto", minHeight: 56 }} onClick={() => openSheet(k)}>
-                  <span style={{ fontWeight: 600 }}>{label}</span><Icon name="chevron" size={18} />
-                </button>
-              </li>
-            ))}
-          </ul>
+        {/* Layer 3 — progressive disclosure as nav rows (Crypto.com) */}
+        <section className="section nav-list">
+          {a.type === "stock" && (
+            <>
+              <button className="nav-row" onClick={() => openSheet("own")}>
+                <span className="nr-ico"><Icon name="shield" size={16} /></span>
+                <span className="nr-label">{t.rights}</span><Icon name="chevron" size={18} />
+              </button>
+              <div className="nav-row" style={{ cursor: "default" }}>
+                <span className="nr-ico"><Icon name="clock" size={16} /></span>
+                <span className="nr-label">Trading hours</span>
+                <span className="nr-value">{a.session === "open" ? "Open now" : a.session === "extended" ? "Extended hours" : "Closed"}</span>
+              </div>
+            </>
+          )}
+          <button className="nav-row" onClick={() => openSheet("about")}>
+            <span className="nr-ico"><Icon name="info" size={16} /></span>
+            <span className="nr-label">{t.about} {a.name}</span><Icon name="chevron" size={18} />
+          </button>
+          <button className="nav-row" onClick={() => openSheet("risks")}>
+            <span className="nr-ico"><Icon name="alert" size={16} /></span>
+            <span className="nr-label">{t.risks}</span>
+            {a.risks.length > 0 && <span className="nr-value">{a.risks.length}</span>}
+            <Icon name="chevron" size={18} />
+          </button>
         </section>
       </div>
 
@@ -253,7 +274,7 @@ export default function AssetPage() {
         <ul className="stack-12">
           {(a.type === "meme" ? tc.firstMemeBody : tc.firstStockBody).map((line) => (
             <li key={line} className="hstack" style={{ alignItems: "flex-start", gap: 10 }}>
-              <span className={`reg-${a.type}`} style={{ width: 3, alignSelf: "stretch", borderRadius: 2, background: "var(--reg)", flex: "none" }} />
+              <span className={`reg-${a.type}`} style={{ width: 3, alignSelf: "stretch", borderRadius: 2, background: "var(--chip-fg)", flex: "none" }} />
               <span>{line}</span>
             </li>
           ))}

@@ -1,3 +1,5 @@
+> **Superseded 29 Sep 2026** by [design-audit.md](design-audit.md) (Crypto.com components + system, Trust Wallet branding). Kept for history.
+
 # Design Language Brief — "Two Registers"
 
 Source: Mobbin iOS screens observed 2026-09-29. Values are **estimates read from screenshots**, not specs.

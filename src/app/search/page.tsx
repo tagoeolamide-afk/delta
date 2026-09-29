@@ -51,7 +51,7 @@ export default function SearchPage() {
       <h1 className="sr-only">Search</h1>
       <header className="topbar" style={{ gap: 4 }}>
         <button className="icon-btn" aria-label={common.back} onClick={() => router.back()}><Icon name="back" /></button>
-        <div className="grow hstack" style={{ minHeight: 46, padding: "0 14px", borderRadius: 999, background: "var(--surface)" }}>
+        <div className="grow hstack" style={{ minHeight: 46, padding: "0 14px", borderRadius: 999, background: "var(--s1)" }}>
           <Icon name="search" size={18} />
           <label htmlFor="q" className="sr-only">{search.label}</label>
           <input

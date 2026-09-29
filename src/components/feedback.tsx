@@ -35,7 +35,7 @@ export function SkeletonRows({ n = 4, label = "Loading" }: { n?: number; label?:
 export function EmptyState({ title, body, action, icon = "compass" }: { title: string; body?: string; action?: ReactNode; icon?: IconName }) {
   return (
     <div style={{ padding: "28px 4px", display: "grid", gap: 10, justifyItems: "start" }}>
-      <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, borderRadius: 22, background: "var(--surface)", color: "var(--ink-2)" }}>
+      <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, borderRadius: 22, background: "var(--s1)", color: "var(--text-2)" }}>
         <Icon name={icon} />
       </span>
       <p className="h-section">{title}</p>

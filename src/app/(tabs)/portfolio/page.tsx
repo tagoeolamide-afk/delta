@@ -9,7 +9,7 @@ import { money, spokenChange } from "@/lib/format";
 import { track } from "@/lib/analytics";
 import { portfolio as t } from "@/content/copy";
 import { AssetRow } from "@/components/AssetRow";
-import { FullChart, PriceChange, RangeSelector, UpdatedAt } from "@/components/market";
+import { FullChart, Money, PriceChange, RangeSelector, UpdatedAt } from "@/components/market";
 import { AllocationBar, ActivityRow } from "@/components/portfolio";
 import { Banner, EmptyState, Skeleton, SkeletonRows } from "@/components/feedback";
 import { useScrollMemory } from "@/components/chrome";
@@ -52,9 +52,15 @@ export default function PortfolioPage() {
         ) : (
           <>
             <section aria-label="Portfolio value">
-              <p className="display-1 num">{money(shown)}</p>
+              <p className="label">Total value</p>
+              <p className="display-1" style={{ marginTop: 6 }}><Money value={shown} unit="USD" /></p>
               <p style={{ marginTop: 6 }}><PriceChange pctValue={changePct} abs={change} period={scrub !== null ? "since start of period" : RANGE_LABEL[range]} /></p>
-              <p style={{ marginTop: 6 }}><UpdatedAt ts={s.quote(p.rows[0]?.holding.assetId ?? "doge").updatedAt} now={s.now} stale={s.lab.stale || s.lab.offline} /></p>
+              <p style={{ marginTop: 10 }}><UpdatedAt ts={s.quote(p.rows[0]?.holding.assetId ?? "doge").updatedAt} now={s.now} stale={s.lab.stale || s.lab.offline} /></p>
+              <dl className="stats" style={{ marginTop: 16 }}>
+                <div><dt>Today</dt><dd><PriceChange pctValue={p.dayPct} className="small" /></dd></div>
+                <div><dt>Total return</dt><dd><PriceChange pctValue={p.totalPct} className="small" /></dd></div>
+                <div><dt>Cash</dt><dd className="num">{money(p.cash)}</dd></div>
+              </dl>
               {p.excluded > 0 && <div style={{ marginTop: 10 }}><Banner tone="warn">{t.excluded(p.excluded)}</Banner></div>}
               {pending.length > 0 && <div style={{ marginTop: 10 }}><Banner tone="info" icon="clock">{pending.length === 1 ? "1 order is" : `${pending.length} orders are`} waiting for confirmation. <Link href="/activity" className="btn-link" style={{ minHeight: 0, padding: 0 }}>View</Link></Banner></div>}
             </section>

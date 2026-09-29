@@ -124,17 +124,18 @@ function Amount({ asset: a, side }: { asset: Asset; side: TradeSide }) {
 
       <div style={{ padding: "0 var(--gutter)", flex: 1, display: "flex", flexDirection: "column" }}>
         {/* Asset context */}
-        <div className="hstack" style={{ gap: 10 }}>
-          <AssetLogo asset={a} size={32} />
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <p className="small" style={{ fontWeight: 600 }}>{a.name} <span className="num muted" style={{ fontWeight: 500 }}>{a.symbol}</span></p>
+        <div className="between">
+          {/* Crypto.com-style asset pill + Trust-style type chip */}
+          <span className="hstack" style={{ gap: 8 }}>
+            <span className="hstack chip solid" style={{ gap: 8, paddingLeft: 6 }}><AssetLogo asset={a} size={24} /><span style={{ fontWeight: 700 }}>{a.symbol}</span></span>
             <TypeLabel type={a.type} />
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <p className="label">Price</p>
+          </span>
+          <span style={{ textAlign: "right" }}>
+            <span className="label" style={{ display: "block" }}>Price</span>
             {isFinite(price) ? <PriceText value={price} className="small" /> : <span className="small muted">—</span>}
-          </div>
+          </span>
         </div>
+        <p className="small muted" style={{ marginTop: 6 }}>{a.name}</p>
 
         {/* Amount — the hero */}
         <div style={{ flex: 1, display: "grid", alignContent: "center", justifyItems: "center", gap: 10, padding: "20px 0", minHeight: 190 }}>
@@ -142,7 +143,7 @@ function Amount({ asset: a, side }: { asset: Asset; side: TradeSide }) {
             className="display-1 num"
             aria-live="polite"
             aria-label={`Amount ${display} ${unitLabel}`}
-            style={{ fontSize: display.length > 9 ? "2.6rem" : "3.5rem", color: n === 0 ? "var(--ink-3)" : insufficient || oversell ? "var(--loss)" : "var(--ink)", textAlign: "center", wordBreak: "break-all" }}
+            style={{ fontSize: display.length > 9 ? "2.6rem" : "3.5rem", color: n === 0 ? "var(--text-3)" : insufficient || oversell ? "var(--loss)" : "var(--accent-text)", textAlign: "center", wordBreak: "break-all" }}
           >
             {draft.unit === "usd" ? `$${display}` : <>{display}<span style={{ fontSize: "0.5em", marginLeft: 8 }}>{a.symbol}</span></>}
           </p>

@@ -34,8 +34,10 @@ export function price(n: number): { text: string; full: string } {
   const zeros = decimals.match(/^0*/)?.[0].length ?? 0;
   const sig = decimals.slice(zeros, zeros + 4).replace(/0+$/, "") || "0";
   const full = "$0." + "0".repeat(zeros) + sig;
-  // Up to 3 leading zeros reads fine written out ($0.0031); beyond that, compress.
-  if (zeros < 4) return { text: full, full };
+  // Write it out in full ($0.00000953) — the PRD's example format and the only one
+  // non-crypto users can read. Compress to subscript-zero only for extreme cases
+  // where the full string would stop fitting (8+ zeros).
+  if (zeros < 8) return { text: full, full };
   const sub = String(zeros).split("").map((d) => SUBSCRIPT[+d]).join("");
   return { text: `$0.0${sub}${sig}`, full };
 }

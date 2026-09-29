@@ -12,9 +12,9 @@ import { track } from "@/lib/analytics";
 export function AllocationBar({ meme, stock, cash }: { meme: number; stock: number; cash: number }) {
   const total = meme + stock + cash || 1;
   const parts = [
-    { key: "meme", label: TYPE_PLURAL.meme, v: meme, color: "var(--meme)" },
-    { key: "stock", label: TYPE_PLURAL.stock, v: stock, color: "var(--stock)" },
-    { key: "cash", label: pc.cash, v: cash, color: "var(--line-strong)" },
+    { key: "meme", label: TYPE_PLURAL.meme, v: meme, color: "var(--meme-fg)" },
+    { key: "stock", label: TYPE_PLURAL.stock, v: stock, color: "var(--stock-fg)" },
+    { key: "cash", label: pc.cash, v: cash, color: "var(--line-2)" },
   ];
   return (
     <div>

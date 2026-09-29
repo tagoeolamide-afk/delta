@@ -11,7 +11,8 @@ npm run dev     # http://localhost:3000, best viewed at phone width
 
 | Path | What |
 |---|---|
-| `docs/design-language.md` | "Two Registers" design brief, taken from Mobbin references |
+| `docs/design-audit.md` | Current design direction: Crypto.com components + system, Trust Wallet branding, Inter, Lucide |
+| `docs/design-language.md` | Earlier "Two Registers" brief (superseded) |
 | `docs/DECISIONS.md` | Placeholder answers to the PRD's open questions (§25). Needs product/legal sign-off |
 | `src/lib/config.ts` | Product rules: fee, material-move threshold, minimum order, presets |
 | `src/content/copy.ts` | Every UI string and the glossary |

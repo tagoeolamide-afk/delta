@@ -54,7 +54,7 @@ export default function PositionPage() {
           <AssetLogo asset={a} size={44} />
           <span className="row-main">
             <span className="row-name">{a.name}</span>
-            <span className="row-sub"><span className="num" style={{ fontWeight: 600, color: "var(--ink)" }}>{a.symbol}</span><TypeLabel type={a.type} /></span>
+            <span className="row-sub"><span className="num" style={{ fontWeight: 600, color: "var(--text)" }}>{a.symbol}</span><TypeLabel type={a.type} /></span>
           </span>
           <Icon name="chevron" size={18} />
         </Link>

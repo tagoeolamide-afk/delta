@@ -17,7 +17,7 @@ const STATUS_STYLE: Record<OrderStatus, { icon: IconName; bg: string; fg: string
   completed: { icon: "check", bg: "var(--gain-tint)", fg: "var(--gain)" },
   pending: { icon: "clock", bg: "var(--accent-tint)", fg: "var(--accent)" },
   unknown: { icon: "clock", bg: "var(--warn-tint)", fg: "var(--warn)" },
-  failed: { icon: "alert", bg: "var(--error-tint)", fg: "var(--loss)" },
+  failed: { icon: "alert", bg: "var(--loss-tint)", fg: "var(--loss)" },
 };
 
 export default function OrderResultPage() {
@@ -93,6 +93,11 @@ export default function OrderResultPage() {
           <Icon name={st.icon} size={16} />{r.statusChip[status!]}
         </span>
         <h1 ref={heading} tabIndex={-1} className="display-2" style={{ marginTop: 18, outline: "none" }}>{title}</h1>
+        <p className="sentence num" style={{ marginTop: 10, fontSize: "1.125rem" }}>
+          {buy
+            ? <>{status === "completed" ? "You bought" : "Buying"} <b>{qty(order.quantity, a.symbol)}</b> for <b>{money(order.usd)}</b></>
+            : <>{status === "completed" ? "You sold" : "Selling"} <b>{qty(order.quantity, a.symbol)}</b> for <b>{money(order.usd)}</b></>}
+        </p>
         {body && <p className="muted" style={{ marginTop: 10, maxWidth: "34ch" }}>{body}</p>}
 
         <div className="card" style={{ marginTop: 28 }}>
@@ -105,7 +110,7 @@ export default function OrderResultPage() {
             <div className="kv"><dt>{status === "completed" ? "You received" : "Expected"}</dt><dd className="num">{status === "completed" ? "" : "≈ "}{buy ? qty(order.quantity, a.symbol) : money(order.usd)}</dd></div>
             <div className="kv"><dt>Price</dt><dd className="num">{fmtPrice(order.price).text}</dd></div>
             <div className="kv"><dt>Delta fee</dt><dd className="num">{money(order.fee)}</dd></div>
-            <div className="kv"><dt>Order ID</dt><dd className="num" style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}>{order.id}</dd></div>
+            <div className="kv"><dt>Order ID</dt><dd className="num" style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 500 }}>{order.id}</dd></div>
           </dl>
         </div>
       </div>

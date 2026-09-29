@@ -1,8 +1,18 @@
 import type { Asset, AssetType } from "@/lib/types";
 import { TYPE_LABEL } from "@/content/copy";
+import { LOGOS } from "@/lib/logos";
 
-/** Deterministic placeholder from symbol + hue (PRD §20 "Missing logo"). */
+/** Real logo when we have one; otherwise a deterministic lettered avatar (PRD §20 "Missing logo"). */
 export function AssetLogo({ asset, size = 40 }: { asset: Asset; size?: number }) {
+  const logo = LOGOS[asset.id];
+  if (logo) {
+    const g = size * (logo.scale ?? 0.55);
+    return (
+      <span className="logo" aria-hidden style={{ width: size, height: size, background: logo.bg, boxShadow: "inset 0 0 0 1px rgb(127 127 127 / 0.18)" }}>
+        <svg viewBox="0 0 24 24" width={g} height={g} fill={logo.fg}>{logo.glyph}</svg>
+      </span>
+    );
+  }
   const h = asset.logoHue;
   const initials = asset.symbol.slice(0, 2);
   return (
@@ -11,7 +21,7 @@ export function AssetLogo({ asset, size = 40 }: { asset: Asset; size?: number })
       aria-hidden
       style={{
         width: size, height: size, fontSize: size * 0.4,
-        background: `linear-gradient(145deg, hsl(${h} 42% 46%), hsl(${(h + 24) % 360} 38% 34%))`,
+        background: `hsl(${h} 45% 38%)`,
       }}
     >
       {initials}
@@ -30,7 +40,7 @@ export function IdentityStack({ asset, nameAs = "span" }: { asset: Asset; nameAs
     <div className="row-main">
       <Name className="row-name" style={nameAs === "h1" ? { fontSize: "1.125rem" } : undefined}>{asset.name}</Name>
       <span className="row-sub">
-        <span className="num" style={{ fontWeight: 600, color: "var(--ink)" }}>{asset.symbol}</span>
+        <span className="num" style={{ fontWeight: 600, color: "var(--text)" }}>{asset.symbol}</span>
         <TypeLabel type={asset.type} />
       </span>
     </div>
